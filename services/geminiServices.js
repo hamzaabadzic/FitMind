@@ -1,26 +1,28 @@
-import { sendToFitMind } from "../api.js";
+// OVO JE TVOJA FUNKCIJA KOJA ZOVE TVOJ PROXY NA RENDER-U
+export async function sendMessageToGemini(message) {
+    try {
+        const response = await fetch("https://nesto-4uw8.onrender.com/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message })
+        });
 
-let chatHistory = [];
+        const data = await response.json();
 
-// Poziv tvog Render proxy servera
-export async function sendMessageToGemini(message, history = []) {
-  try {
-    const response = await sendToFitMind(message);
-    
-    // Google API vrati format: response.candidates[0].content.parts[0].text
-    const output =
-      response?.candidates?.[0]?.content?.parts?.[0]?.text ??
-      "⚠️ Greška: Nema odgovora sa servera.";
+        // Google API vraća odgovor ovako:
+        const output =
+            data?.candidates?.[0]?.content?.parts?.[0]?.text ??
+            "⚠️ Greška: Nema odgovora sa servera.";
 
-    return output;
+        return output;
 
-  } catch (err) {
-    console.error("Greška u Gemini servisu:", err);
-    throw err;
-  }
+    } catch (err) {
+        console.error("GREŠKA u Gemini servisu:", err);
+        return "⚠️ Greška u konekciji sa serverom.";
+    }
 }
 
-// Kada se otvori nova sesija
+// Chat history – ako ti treba
 export function startChatWithHistory(history = []) {
-  chatHistory = history;
+    // nije obavezno ali ostavljam da ti ne napravi error
 }
